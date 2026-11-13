@@ -22,7 +22,7 @@ import {
   type Product,
 } from "@/data/products";
 const HardwareScene = dynamic(() => import("./HardwareScene"), { ssr: false });
-const BloodTrim = dynamic(() => import("./BloodTrim"), {ssr:false});
+const BloodTrim = dynamic(() => import("./BloodTrim"), { ssr: false });
 const slides = [
   {
     image: "/images/black-tide-coast.webp",
@@ -180,7 +180,7 @@ export default function Store() {
         </div>
       </section>
       <section id="catalog" className="catalog">
-        <BloodTrim/>
+        <BloodTrim />
         <div className="max-w-[1440px] mx-auto">
           <div className="catalog-head flex items-end justify-between">
             <h2>

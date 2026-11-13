@@ -16,10 +16,21 @@ export default function Overlay({
     const el = dialog.current!;
     el.showModal();
     const old = document.body.style.overflow;
+    const y = window.scrollY;
+    const previous = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${y}px`;
+    document.body.style.width = "100%";
     document.body.style.overflow = "hidden";
     return () => {
       el.close();
       document.body.style.overflow = old;
+      Object.assign(document.body.style, previous);
+      window.scrollTo({ top: y, behavior: "instant" });
     };
   }, []);
   return (
@@ -45,9 +56,11 @@ export default function Overlay({
         }
       }}
     >
-      <button className="close" aria-label="Закрыть" onClick={close}>
-        <X />
-      </button>
+      <div className="dialog-tools">
+        <button className="close" aria-label="Закрыть" onClick={close}>
+          <X />
+        </button>
+      </div>
       {children}
     </dialog>
   );

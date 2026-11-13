@@ -48,7 +48,9 @@ export function useStoreScroll(category: Category, modalOpen: boolean) {
   }, []);
 
   useEffect(() => {
-    const media = matchMedia("(prefers-reduced-motion: no-preference)");
+    const media = matchMedia(
+      "(min-width: 800px) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+    );
     let cleanups: (() => void)[] = [];
     function update() {
       cleanups.forEach((stop) => stop());
@@ -86,7 +88,11 @@ export function useStoreScroll(category: Category, modalOpen: boolean) {
 
   useEffect(() => {
     if (modalOpen) engine.current?.stop();
-    else engine.current?.start();
+    else if (engine.current) {
+      engine.current.resize();
+      engine.current.start();
+      engine.current.scrollTo(window.scrollY, { immediate: true, force: true });
+    }
   }, [modalOpen]);
 
   function toCatalog() {

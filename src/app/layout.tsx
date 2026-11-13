@@ -3,7 +3,9 @@ import "@fontsource-variable/oswald";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import "./glass.css";
+import "./mobile.css";
 export const viewport: Viewport = {
+  viewportFit: "cover",
   colorScheme: "dark",
   themeColor: "#070809",
 };
