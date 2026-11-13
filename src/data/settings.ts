@@ -5,11 +5,6 @@ export type PaymentSettings = {
   terms: string;
   termsUk: string;
 };
-export type StoreData = {
-  products: import("./products").Product[];
-  payment: PaymentSettings;
-  revision: number;
-};
 export const defaultPayment: PaymentSettings = {
   card: "4441111046654499",
   recipient: "",

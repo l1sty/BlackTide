@@ -1,7 +1,6 @@
 import Store from "@/components/Store";
-import { readStore } from "@/lib/store-db";
-export const dynamic = "force-dynamic";
+import { products } from "@/data/products";
+import { defaultPayment } from "@/data/settings";
 export default function Page() {
-  const data = readStore();
-  return <Store products={data.products} payment={data.payment} />;
+  return <Store products={products} payment={defaultPayment} />;
 }

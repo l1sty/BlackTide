@@ -25,7 +25,6 @@ export const productStatuses = {
   sold_out: "Продано",
   unknown: "Наличие уточняется",
 } as const;
-const denimSizes = ["S", "M", "L", "XL"];
 export const products: Product[] = [
   {
     id: "BT-191",
@@ -38,7 +37,11 @@ export const products: Product[] = [
     fit: "Одно отделение для ID-карты, металлическая заклёпка.",
     dimensions: "8 × 10 см",
     sizes: ["Единый"],
-    images: [1, 2, 3].map((i) => `/images/wallet-191-${i}.webp`),
+    images: [
+      "/images/wallet-191-1.webp",
+      "/images/wallet-191-2.webp",
+      "/images/wallet-191-3.webp",
+    ],
   },
   {
     id: "BT-116",
@@ -51,7 +54,13 @@ export const products: Product[] = [
     fit: "Складывается втрое. Отделение для купюр и карман 7 × 6 см.",
     dimensions: "9 × 6,5 см в сложенном виде; 20 × 9 см в разложенном",
     sizes: ["Единый"],
-    images: [1, 2, 3, 4, 5].map((i) => `/images/wallet-116-${i}.webp`),
+    images: [
+      "/images/wallet-116-1.webp",
+      "/images/wallet-116-2.webp",
+      "/images/wallet-116-3.webp",
+      "/images/wallet-116-4.webp",
+      "/images/wallet-116-5.webp",
+    ],
   },
   {
     id: "BT-01",
@@ -89,7 +98,7 @@ export const products: Product[] = [
       "Выстиранный хлопковый деним, стальная молния и металлическая пуговица.",
     fit: "Свободный силуэт и глубокие задние карманы.",
     dimensions: "",
-    sizes: denimSizes,
+    sizes: ["S", "M", "L", "XL"],
     images: [
       "/images/photo_2026-11-01_11-40-56-black.webp",
       "/images/photo_2026-11-01_11-40-57-black.webp",
@@ -146,6 +155,19 @@ export const products: Product[] = [
       "/images/post-95-3-black.webp",
     ],
     imageLabels: ["Вид спереди", "Вид сзади", "Деталь низа"],
+  },
+  {
+    id: "BT-62134d24",
+    name: "Новый товар",
+    category: "Джинсы",
+    status: "unknown",
+    price: 700,
+    color: "",
+    material: "",
+    fit: "",
+    dimensions: "",
+    sizes: ["S"],
+    images: ["/images/uploaded-b8349d80-1fec-45d4-8ab9-493168711d64.webp"],
   },
 ];
 export const money = (n: number) =>
