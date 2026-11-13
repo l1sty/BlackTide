@@ -1,69 +1,31 @@
 "use client";
+
+import { useLanguage } from "@/i18n/LanguageProvider";
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-} from "lucide-react";
+
+import { ArrowDown, ArrowUpRight, Plus } from "lucide-react";
 import Navigation from "./Navigation";
 import { useStoreScroll } from "./useStoreScroll";
 import ProductView from "./ProductView";
 import Cart from "./Cart";
 import {
-  products,
+  productStatuses,
   categories,
-  money,
-  validLine,
+  restoreCart,
   type Category,
   type Line,
   type Product,
 } from "@/data/products";
-const HardwareScene = dynamic(() => import("./HardwareScene"), { ssr: false });
-const BloodTrim = dynamic(() => import("./BloodTrim"), { ssr: false });
-const slides = [
-  {
-    image: "/images/black-tide-coast.webp",
-    label: "Деним и кожа",
-    heading: "BLACK TIDE",
-    category: "Все" as Category,
-  },
-  {
-    image: "/images/gothic-cathedral.webp",
-    label: "Джинсы",
-    heading: "RAW STRAIGHT",
-    copy: "Прямой крой и светлый деним.",
-    category: "Джинсы" as Category,
-  },
-  {
-    image: "/images/gothic-cloister.webp",
-    label: "Джинсы",
-    heading: "WASHED LOOSE",
-    copy: "Свободная посадка и контрастный деним.",
-    category: "Джинсы" as Category,
-  },
-];
-export default function Store() {
-  const [showHardware, setShowHardware] = useState(false);
-  useEffect(() => {
-    const motion = matchMedia("(prefers-reduced-motion: no-preference)");
-    let supported: boolean | undefined;
-    function update() {
-      if (motion.matches && supported === undefined) {
-        const gl = document.createElement("canvas").getContext("webgl2");
-        supported = Boolean(gl);
-        gl?.getExtension("WEBGL_lose_context")?.loseContext();
-      }
-      setShowHardware(motion.matches && Boolean(supported));
-    }
-    update();
-    motion.addEventListener("change", update);
-    return () => motion.removeEventListener("change", update);
-  }, []);
+import type { PaymentSettings } from "@/data/settings";
+export default function Store({
+  products,
+  payment,
+}: {
+  products: Product[];
+  payment: PaymentSettings;
+}) {
+  const { t, money, productText } = useLanguage();
   const [category, setCategory] = useState<Category>("Все"),
-    [slide, setSlide] = useState(0),
     [selected, setSelected] = useState<Product | null>(null),
     [cart, setCart] = useState(false);
   const [items, setItems] = useState<Line[]>([]),
@@ -71,7 +33,7 @@ export default function Store() {
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("black-tide-cart") || "[]");
-      if (Array.isArray(saved)) setItems(saved.filter(validLine));
+      setItems(restoreCart(saved, products));
     } catch {}
     setReady(true);
   }, []);
@@ -82,9 +44,9 @@ export default function Store() {
       } catch {}
   }, [items, ready]);
   const visible = products.filter(
-      (p) => category === "Все" || p.category === category,
-    ),
-    scene = slides[slide];
+    (p) => category === "Все" || p.category === category,
+  );
+  const currentItems = restoreCart(items, products);
   const { progress, readout, toCatalog } = useStoreScroll(
     category,
     cart || Boolean(selected),
@@ -94,16 +56,26 @@ export default function Store() {
     toCatalog();
   }
   function add(size: string) {
-    if (!selected) return;
+    if (!selected || selected.status === "sold_out") return;
     const id = selected.id;
     setItems((lines) =>
       lines.some((l) => l.id === id && l.size === size)
         ? lines.map((l) =>
             l.id === id && l.size === size
-              ? { ...l, qty: Math.min(99, l.qty + 1) }
+              ? {
+                  ...l,
+                  qty: Math.min(99, l.qty + 1),
+                }
               : l,
           )
-        : [...lines, { id, size, qty: 1 }],
+        : [
+            ...lines,
+            {
+              id,
+              size,
+              qty: 1,
+            },
+          ],
     );
     setSelected(null);
     setCart(true);
@@ -115,76 +87,35 @@ export default function Store() {
         <div ref={progress} />
       </div>
       <Navigation
-        count={items.reduce((s, l) => s + l.qty, 0)}
+        count={currentItems.reduce((s, l) => s + l.qty, 0)}
         open={() => setCart(true)}
       />
-      <section className={"hero scene-" + slide} aria-label="Лукбук Black Tide">
+      <section className="hero scene-0" aria-label={t("Лукбук Black Tide")}>
         <img
           className="hero-image"
-          src={scene.image}
-          alt={
-            slide === 0
-              ? "Штормовой берег и готический замок Black Tide"
-              : scene.label
-          }
+          src="/images/black-tide-coast-clean.webp"
+          alt={t("Штормовой берег и готический замок Black Tide")}
           fetchPriority="high"
         />
         <div className="hero-shade" />
         <div className="hero-frame max-w-[1440px] mx-auto">
-          <figure className="hardware-study">
-            <div className="hardware-model">
-              <img
-                className="hardware-poster"
-                src={`/images/hardware-${slide}.webp`}
-                alt=""
-              />
-              {showHardware && <HardwareScene slide={slide} />}
-            </div>
-          </figure>
           <div className="hero-copy">
-            {slide !== 0 && (
-              <div className="collection-tag">
-                <i />
-                Коллекция 01 <span>/</span> {scene.label}
-              </div>
-            )}
-            <h1>{scene.heading}</h1>
-            {scene.copy && <p>{scene.copy}</p>}
-            <button
-              className="hero-action"
-              onClick={() => choose(scene.category)}
-            >
-              Смотреть коллекцию{" "}
+            <h1>BLACK TIDE</h1>
+            <button className="hero-action" onClick={() => choose("Все")}>
+              {t("Смотреть коллекцию")}{" "}
               <span className="action-arrow">
                 <ArrowUpRight />
               </span>
             </button>
           </div>
-          <div className="slide-controls">
-            <span className="mono">
-              <b>0{slide + 1}</b> / 03
-            </span>
-            <button
-              aria-label="Предыдущий кадр"
-              onClick={() => setSlide((slide + 2) % 3)}
-            >
-              <ChevronLeft />
-            </button>
-            <button
-              aria-label="Следующий кадр"
-              onClick={() => setSlide((slide + 1) % 3)}
-            >
-              <ChevronRight />
-            </button>
-          </div>
         </div>
       </section>
       <section id="catalog" className="catalog">
-        <BloodTrim />
         <div className="max-w-[1440px] mx-auto">
           <div className="catalog-head flex items-end justify-between">
             <h2>
-              Каталог<span>/ {String(visible.length).padStart(2, "0")}</span>
+              {t("Каталог")}
+              <span>/ {String(visible.length).padStart(2, "0")}</span>
             </h2>
             <div className="catalog-filters">
               {categories
@@ -197,7 +128,7 @@ export default function Store() {
                     aria-pressed={category === c}
                     onClick={() => setCategory(c)}
                   >
-                    {c}
+                    {t(c)}
                   </button>
                 ))}
             </div>
@@ -215,7 +146,7 @@ export default function Store() {
                     loading="lazy"
                     width="640"
                     height="720"
-                    alt={p.name}
+                    alt={productText(p, "name")}
                   />
                   <span className="code mono">{p.id}</span>
                   <span className="card-open">
@@ -224,10 +155,13 @@ export default function Store() {
                 </div>
                 <div className="card-caption">
                   <div className="card-text">
-                    <h3>{p.name}</h3>
+                    <h3>{productText(p, "name")}</h3>
                     <span>{money(p.price)}</span>
                   </div>
-                  <small>{p.color}</small>
+                  <small>{productText(p, "color")}</small>
+                  <span className="product-status" data-status={p.status}>
+                    {t(productStatuses[p.status])}
+                  </span>
                 </div>
               </button>
             ))}
@@ -236,13 +170,13 @@ export default function Store() {
       </section>
       <section id="delivery" className="store-editorial shipping">
         <div className="editorial-inner">
-          <h2>Доставка</h2>
+          <h2>{t("Доставка")}</h2>
           <div>
-            <h3>Новой Почтой по Украине</h3>
+            <h3>{t("Новой Почтой по Украине")}</h3>
             <p>
-              При оформлении заказа укажите город и отделение Новой Почты.
-              Оставьте телефон и ник в Telegram, чтобы мы могли подтвердить
-              заказ и согласовать детали отправки.
+              {t(
+                "При оформлении заказа укажите город и отделение Новой Почты. Оставьте телефон и ник в Telegram, чтобы мы могли подтвердить заказ и согласовать детали отправки.",
+              )}
             </p>
           </div>
         </div>
@@ -251,9 +185,13 @@ export default function Store() {
         <a className="logo" href="#top">
           BLACK TIDE
         </a>
-        <span>Деним и кожаные аксессуары</span>
-        <a href="#top" aria-label="Наверх">
-          <ArrowDown style={{ transform: "rotate(180deg)" }} />
+        <span>{t("Деним и кожаные аксессуары")}</span>
+        <a href="#top" aria-label={t("Наверх")}>
+          <ArrowDown
+            style={{
+              transform: "rotate(180deg)",
+            }}
+          />
         </a>
       </footer>
       {selected && (
@@ -264,7 +202,13 @@ export default function Store() {
         />
       )}
       {cart && (
-        <Cart items={items} setItems={setItems} close={() => setCart(false)} />
+        <Cart
+          products={products}
+          payment={payment}
+          items={currentItems}
+          setItems={setItems}
+          close={() => setCart(false)}
+        />
       )}
     </main>
   );

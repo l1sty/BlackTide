@@ -4,6 +4,7 @@ import "lenis/dist/lenis.css";
 import "./globals.css";
 import "./glass.css";
 import "./mobile.css";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 export const viewport: Viewport = {
   viewportFit: "cover",
   colorScheme: "dark",
@@ -17,7 +18,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

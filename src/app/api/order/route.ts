@@ -1,5 +1,7 @@
-import { products, money, validLine, type Line } from "@/data/products";
+import { productStatuses, money, validLine, type Line } from "@/data/products";
+import { readStore } from "@/lib/store-db";
 export async function POST(req: Request) {
+  const { products } = readStore();
   const error = (message: string, status: number) =>
     Response.json({ error: message }, { status });
   let data;
@@ -14,16 +16,34 @@ export async function POST(req: Request) {
     !Array.isArray(lines) ||
     !lines.length ||
     lines.length > 24 ||
-    !lines.every(validLine)
+    !lines.every((line) => validLine(line, products))
   )
     return error("Проверьте товары и размеры", 400);
+  if (
+    lines.some((line) => {
+      const supplied = (line as Line & { unitPrice?: unknown }).unitPrice;
+      return (
+        supplied !== undefined &&
+        supplied !== products.find((p) => p.id === line.id)!.price
+      );
+    })
+  )
+    return error(
+      "Цены изменились. Обновите страницу и проверьте корзину.",
+      409,
+    );
+  if (
+    new Set(lines.map((line) => line.id + "|" + line.size)).size !==
+    lines.length
+  )
+    return error("Объедините повторяющиеся позиции заказа", 400);
   if (
     !c ||
     !["name", "phone", "telegram", "city", "branch"].every(
       (k) =>
         typeof c[k] === "string" &&
         c[k].trim().length > 0 &&
-        c[k].length <= 120 &&
+        c[k].length <= (k === "branch" ? 300 : 120) &&
         !/[\r\n]/.test(c[k]),
     )
   )
@@ -41,7 +61,7 @@ export async function POST(req: Request) {
   const rows = lines.map((line) => {
     const p = products.find((x) => x.id === line.id)!;
     total += p.price * line.qty;
-    return `${p.id} · ${p.name} · ${line.size} × ${line.qty} — ${money(p.price * line.qty)}`;
+    return `${p.id} · ${p.name} · ${productStatuses[p.status]} · ${line.size} × ${line.qty} — ${money(p.price * line.qty)}`;
   });
   const text = [
     "Новый заказ — Black Tide",

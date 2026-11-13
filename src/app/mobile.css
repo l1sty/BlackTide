@@ -53,7 +53,7 @@ dialog {
     min-height: 44px;
     font-size: 14px;
   }
-  .hero:has(.hardware-study) {
+  .hero {
     height: clamp(600px, 90svh, 760px);
     min-height: 0;
     align-items: flex-end;
@@ -61,7 +61,7 @@ dialog {
   .hero-frame {
     align-items: flex-end;
   }
-  .hero:has(.hardware-study) .hero-copy {
+  .hero .hero-copy {
     margin: 0 var(--gutter) 112px;
     max-width: calc(100% - 32px);
   }
@@ -101,7 +101,7 @@ dialog {
     height: 44px;
   }
   .catalog {
-    padding-top: 52px;
+    padding-top: 28px;
     padding-bottom: 40px;
     scroll-margin-top: calc(128px + env(safe-area-inset-top));
   }
@@ -343,7 +343,77 @@ dialog {
   }
 }
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
-  .hero:has(.hardware-study) {
+  .hero {
     height: 580px;
+  }
+}
+
+.hero h1 {
+  color: #b42318;
+  text-shadow: 0 2px 20px #0009;
+}
+.scene-1 .hardware-study,
+.scene-2 .hardware-study {
+  width: clamp(240px, 28vw, 420px);
+}
+.prepayment {
+  padding: 16px;
+  border: 1px solid #7d0d06;
+  border-radius: 14px;
+  background: #100d0c;
+  margin: 20px 0;
+}
+.prepayment summary {
+  cursor: pointer;
+  min-height: 32px;
+  font-size: 15px;
+}
+.prepayment .payment-number {
+  font:
+    18px/1.5 "Courier New",
+    monospace;
+  letter-spacing: 0.04em;
+  color: white;
+  overflow-wrap: anywhere;
+}
+.prepayment p {
+  font-size: 14px;
+  margin: 12px 0;
+}
+.prepayment small {
+  color: #b9bfc1;
+}
+.copy-card {
+  padding: 10px 12px;
+  border: 1px solid #7d0d06;
+  border-radius: 8px;
+  min-height: 44px;
+  color: #ffc7bf;
+}
+@media (max-width: 799px) {
+  .hero .scene-1 .hardware-study,
+  .hero .scene-2 .hardware-study {
+    width: 164px;
+  }
+  .scene-1 .hardware-study,
+  .scene-2 .hardware-study {
+    width: 164px !important;
+  }
+  .catalog-filters {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: start;
+  }
+  .catalog-head {
+    align-items: start;
+  }
+}
+
+@media (max-width: 799px) {
+  .hero .hero-copy {
+    margin: 0 var(--gutter) 72px;
+  }
+  .hero {
+    height: clamp(520px, 80svh, 680px);
   }
 }

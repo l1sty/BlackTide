@@ -1,9 +1,17 @@
 "use client";
+
+import { useLanguage } from "@/i18n/LanguageProvider";
 import { useEffect, useRef, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 const sections = [
-  { id: "catalog", label: "Каталог" },
-  { id: "delivery", label: "Доставка" },
+  {
+    id: "catalog",
+    label: "Каталог",
+  },
+  {
+    id: "delivery",
+    label: "Доставка",
+  },
 ] as const;
 
 // Capsule normal and exponential edge falloff adapted from dashersw/liquid-glass-js.
@@ -38,12 +46,14 @@ export default function Navigation({
   count: number;
   open: () => void;
 }) {
+  const { t, language, setLanguage } = useLanguage();
   const ref = useRef<HTMLElement>(null);
   const [map, setMap] = useState("");
   const [active, setActive] = useState(0);
   useEffect(() => {
     const elements = sections.map(({ id }) => document.getElementById(id)!);
     function sync() {
+      if (document.querySelector("dialog[open]")) return;
       const line = (ref.current?.getBoundingClientRect().bottom ?? 88) + 32;
       let index = 0;
       elements.forEach((section, i) => {
@@ -58,7 +68,9 @@ export default function Navigation({
     }
     const observer = new ResizeObserver(sync);
     observer.observe(document.body);
-    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("scroll", sync, {
+      passive: true,
+    });
     sync();
     return () => {
       observer.disconnect();
@@ -111,7 +123,7 @@ export default function Navigation({
         <a href="#top" className="logo">
           BLACK TIDE
         </a>
-        <nav aria-label="Разделы магазина">
+        <nav aria-label={t("Разделы магазина")}>
           <span
             className="active-tab"
             style={{
@@ -126,19 +138,43 @@ export default function Navigation({
               href={`#${id}`}
               aria-current={active === index ? "location" : undefined}
             >
-              <span className="category-label">{label}</span>
+              <span className="category-label">{t(label)}</span>
             </a>
           ))}
         </nav>
-        <button
-          className="bag-button"
-          onClick={open}
-          aria-label={`Корзина, товаров: ${count}`}
-        >
-          <ShoppingBag />
-          <span>Корзина</span>
-          <b>{count}</b>
-        </button>
+        <div className="dock-actions">
+          <div
+            className="language-switch"
+            role="group"
+            aria-label={t("Язык сайта")}
+          >
+            <button
+              type="button"
+              lang="uk"
+              aria-pressed={language === "uk"}
+              onClick={() => setLanguage("uk")}
+            >
+              Укр
+            </button>
+            <button
+              type="button"
+              lang="ru"
+              aria-pressed={language === "ru"}
+              onClick={() => setLanguage("ru")}
+            >
+              Рус
+            </button>
+          </div>
+          <button
+            className="bag-button"
+            onClick={open}
+            aria-label={t("Корзина, товаров") + ": " + count}
+          >
+            <ShoppingBag />
+            <span>{t("Корзина")}</span>
+            <b>{count}</b>
+          </button>
+        </div>
       </header>
     </>
   );

@@ -1,16 +1,25 @@
+import { useLanguage } from "@/i18n/LanguageProvider";
 import { useState, useRef, type FormEvent } from "react";
 import { Minus, Plus, Trash2, ArrowUpRight } from "lucide-react";
-import { products, money, type Line } from "@/data/products";
+import { type Product, type Line } from "@/data/products";
+import type { PaymentSettings } from "@/data/settings";
+import Prepayment from "./Prepayment";
 import Overlay from "./Overlay";
+import DeliveryFields from "./DeliveryFields";
 export default function Cart({
+  products,
+  payment,
   items,
   setItems,
   close,
 }: {
+  products: Product[];
+  payment: PaymentSettings;
   items: Line[];
   setItems: (lines: Line[]) => void;
   close: () => void;
 }) {
+  const { t, money, productText } = useLanguage();
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [success, setSuccess] = useState(false);
@@ -18,7 +27,14 @@ export default function Cart({
   function change(i: number, qty: number) {
     setItems(
       items
-        .map((l, j) => (i === j ? { ...l, qty } : l))
+        .map((l, j) =>
+          i === j
+            ? {
+                ...l,
+                qty,
+              }
+            : l,
+        )
         .filter((l) => l.qty > 0),
     );
   }
@@ -30,21 +46,45 @@ export default function Cart({
     setBusy(true);
     setError("");
     try {
-      const body = JSON.stringify({ items, customer });
+      const body = JSON.stringify({
+        items: items.map((line) => ({
+          ...line,
+          unitPrice: products.find((p) => p.id === line.id)?.price,
+        })),
+        customer,
+      });
       const res = await fetch("/api/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body,
+        signal: AbortSignal.timeout(20000),
       });
-      const response = await res.json();
-      if (!res.ok) throw new Error(response.error);
+      const response = await res.json().catch(() => {
+        throw new Error(
+          "Не удалось получить ответ сервера. Корзина сохранена.",
+        );
+      });
+      if (!res.ok)
+        throw new Error(
+          typeof response?.error === "string" && response.error.trim()
+            ? response.error
+            : "Не удалось отправить заказ. Корзина сохранена.",
+        );
+      if (response?.ok !== true)
+        throw new Error("Не удалось подтвердить заказ. Корзина сохранена.");
       setSuccess(true);
       setItems([]);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Не удалось отправить заказ",
+        err instanceof Error && err.name === "TimeoutError"
+          ? "Сервер не ответил вовремя. Корзина сохранена."
+          : err instanceof TypeError
+            ? "Нет соединения с сервером. Проверьте интернет. Корзина сохранена."
+            : err instanceof Error
+              ? err.message
+              : "Не удалось отправить заказ",
       );
     } finally {
       sending.current = false;
@@ -57,23 +97,24 @@ export default function Cart({
       close={() => {
         if (!busy) close();
       }}
-      title="Корзина"
+      title={t("Корзина")}
     >
       <small className="mono">BLACK TIDE</small>
-      <h2>Корзина</h2>
+      <h2>{t("Корзина")}</h2>
       {success ? (
         <>
-          <h3>Заказ принят</h3>
-          <p>Black Tide свяжется с вами для подтверждения доставки.</p>
+          <h3>{t("Заказ принят")}</h3>
+          <p>{t("Black Tide свяжется с вами для подтверждения доставки.")}</p>
+          <Prepayment payment={payment} />
           <button className="solid" onClick={close}>
-            В каталог
+            {t("В каталог")}
           </button>
         </>
       ) : !items.length ? (
         <>
-          <p>В корзине пока пусто</p>
+          <p>{t("В корзине пока пусто")}</p>
           <button className="solid" onClick={close}>
-            Продолжить покупки
+            {t("Продолжить покупки")}
           </button>
         </>
       ) : (
@@ -85,13 +126,13 @@ export default function Cart({
                 <div className="cart-line" key={l.id + l.size}>
                   <img src={p.images[0]} alt="" />
                   <div>
-                    <strong>{p.name}</strong>
+                    <strong>{productText(p, "name")}</strong>
                     <small>
-                      {p.color} · {l.size}
+                      {productText(p, "color")} · {l.size}
                     </small>
                     <div className="stepper">
                       <button
-                        aria-label="Уменьшить количество"
+                        aria-label={t("Уменьшить количество")}
                         onClick={() => change(i, l.qty - 1)}
                       >
                         <Minus />
@@ -99,7 +140,7 @@ export default function Cart({
                       {l.qty}
                       <button
                         disabled={l.qty >= 99}
-                        aria-label="Увеличить количество"
+                        aria-label={t("Увеличить количество")}
                         onClick={() => change(i, l.qty + 1)}
                       >
                         <Plus />
@@ -109,7 +150,7 @@ export default function Cart({
                   <div className="line-end">
                     {money(p.price * l.qty)}
                     <button
-                      aria-label="Удалить позицию"
+                      aria-label={t("Удалить позицию")}
                       onClick={() => change(i, 0)}
                     >
                       <Trash2 />
@@ -120,7 +161,7 @@ export default function Cart({
             })}
           </fieldset>
           <div className="total">
-            <span>Итого</span>
+            <span>{t("Итого")}</span>
             <strong>
               {money(
                 items.reduce(
@@ -132,17 +173,16 @@ export default function Cart({
             </strong>
           </div>
           <form onSubmit={submit}>
-            <h3>Быстрый заказ</h3>
+            <Prepayment payment={payment} />
+            <h3>{t("Быстрый заказ")}</h3>
             <fieldset disabled={busy}>
               {[
-                ["name", "Имя", "name"],
-                ["phone", "Телефон", "tel"],
-                ["telegram", "Ник в Telegram", "off"],
-                ["city", "Город", "address-level2"],
-                ["branch", "Отделение Новой Почты", "off"],
+                ["name", t("Имя"), "name"],
+                ["phone", t("Телефон"), "tel"],
+                ["telegram", t("Ник в Telegram"), "off"],
               ].map(([key, title, auto]) => (
                 <label key={key}>
-                  {title}
+                  {t(title)}
                   <input
                     name={key}
                     type={key === "phone" ? "tel" : "text"}
@@ -152,9 +192,10 @@ export default function Cart({
                   />
                 </label>
               ))}
-              {error && <p role="alert">{error}</p>}
+              <DeliveryFields />
+              {error && <p role="alert">{t(error)}</p>}
               <button className="solid" type="submit">
-                {busy ? "Отправляем…" : "Оформить заказ"}
+                {busy ? t("Отправляем…") : t("Оформить заказ")}
                 <ArrowUpRight />
               </button>
             </fieldset>

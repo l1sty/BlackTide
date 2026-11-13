@@ -1,3 +1,4 @@
+import { useLanguage } from "@/i18n/LanguageProvider";
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 export default function Overlay({
@@ -11,6 +12,7 @@ export default function Overlay({
   title: string;
   drawer?: boolean;
 }) {
+  const { t } = useLanguage();
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const el = dialog.current!;
@@ -30,14 +32,17 @@ export default function Overlay({
       el.close();
       document.body.style.overflow = old;
       Object.assign(document.body.style, previous);
-      window.scrollTo({ top: y, behavior: "instant" });
+      window.scrollTo({
+        top: y,
+        behavior: "instant",
+      });
     };
   }, []);
   return (
     <dialog
       data-lenis-prevent=""
       ref={dialog}
-      aria-label={title}
+      aria-label={t(title)}
       className={drawer ? "drawer" : "product-dialog"}
       onCancel={(e) => {
         e.preventDefault();
@@ -57,7 +62,7 @@ export default function Overlay({
       }}
     >
       <div className="dialog-tools">
-        <button className="close" aria-label="Закрыть" onClick={close}>
+        <button className="close" aria-label={t("Закрыть")} onClick={close}>
           <X />
         </button>
       </div>

@@ -56,27 +56,25 @@ export function useStoreScroll(category: Category, modalOpen: boolean) {
       cleanups.forEach((stop) => stop());
       cleanups = [];
       if (!media.matches) return;
-      document
-        .querySelectorAll<HTMLElement>(".hero, .card-pic")
-        .forEach((target) => {
-          const layer = target.querySelector<HTMLElement>("h1, .code");
-          if (!layer) return;
-          const travel = target.classList.contains("hero") ? 54 : 20;
-          const animation = animate(
-            layer,
-            { y: [-travel, travel] },
-            { ease: "linear" },
-          );
-          const stop = scroll(animation, {
-            target,
-            offset: ["start end", "end start"],
-          });
-          cleanups.push(() => {
-            stop();
-            animation.cancel();
-            layer.style.removeProperty("transform");
-          });
+      document.querySelectorAll<HTMLElement>(".hero").forEach((target) => {
+        const layer = target.querySelector<HTMLElement>("h1");
+        if (!layer) return;
+        const travel = 54;
+        const animation = animate(
+          layer,
+          { y: [-travel, travel] },
+          { ease: "linear" },
+        );
+        const stop = scroll(animation, {
+          target,
+          offset: ["start end", "end start"],
         });
+        cleanups.push(() => {
+          stop();
+          animation.cancel();
+          layer.style.removeProperty("transform");
+        });
+      });
     }
     update();
     media.addEventListener("change", update);
