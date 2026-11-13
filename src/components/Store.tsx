@@ -22,22 +22,23 @@ import {
   type Product,
 } from "@/data/products";
 const HardwareScene = dynamic(() => import("./HardwareScene"), { ssr: false });
+const BloodTrim = dynamic(() => import("./BloodTrim"), {ssr:false});
 const slides = [
   {
-    image: "/images/indigo-detail.webp",
+    image: "/images/black-tide-coast.webp",
     label: "Деним и кожа",
     heading: "BLACK TIDE",
     category: "Все" as Category,
   },
   {
-    image: "/images/indigo-detail.webp",
+    image: "/images/gothic-cathedral.webp",
     label: "Джинсы",
     heading: "RAW STRAIGHT",
     copy: "Прямой крой и светлый деним.",
     category: "Джинсы" as Category,
   },
   {
-    image: "/images/black-denim-detail.webp",
+    image: "/images/gothic-cloister.webp",
     label: "Джинсы",
     heading: "WASHED LOOSE",
     copy: "Свободная посадка и контрастный деним.",
@@ -122,7 +123,9 @@ export default function Store() {
           className="hero-image"
           src={scene.image}
           alt={
-            slide === 0 ? "Крупный план плотного денима индиго" : scene.label
+            slide === 0
+              ? "Штормовой берег и готический замок Black Tide"
+              : scene.label
           }
           fetchPriority="high"
         />
@@ -137,15 +140,6 @@ export default function Store() {
               />
               {showHardware && <HardwareScene slide={slide} />}
             </div>
-            <figcaption>
-              {
-                [
-                  "Фурнитура коллекции",
-                  "Деталь 02 / Ременная пряжка",
-                  "Деталь 03 / Кнопка в разборе",
-                ][slide]
-              }
-            </figcaption>
           </figure>
           <div className="hero-copy">
             {slide !== 0 && (
@@ -186,6 +180,7 @@ export default function Store() {
         </div>
       </section>
       <section id="catalog" className="catalog">
+        <BloodTrim/>
         <div className="max-w-[1440px] mx-auto">
           <div className="catalog-head flex items-end justify-between">
             <h2>

@@ -5,7 +5,7 @@ import "./globals.css";
 import "./glass.css";
 export const viewport: Viewport = {
   colorScheme: "dark",
-  themeColor: "#101315",
+  themeColor: "#070809",
 };
 export const metadata: Metadata = {
   title: "Black Tide — деним и кожаные аксессуары",

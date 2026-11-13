@@ -1,5 +1,14 @@
 @import "tailwindcss";
+@theme inline {
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-border: var(--accent-border);
+}
 :root {
+  --accent: #4b0702;
+  --accent-hover: #6e0c05;
+  --accent-border: rgba(180, 35, 24, 0.45);
+  --accent-focus: #e58c83;
   --ink: #20211f;
   --paper: #f7f6f2;
   --line: #d4d3cd;

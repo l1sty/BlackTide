@@ -1,10 +1,10 @@
 :root {
   color-scheme: dark;
-  --paper: #101315;
+  --paper: #070809;
   --ink: #f5f3ee;
   --muted: #b9bfc1;
   --line: #ffffff29;
-  --glass: linear-gradient(155deg, #ffffff10, transparent 48%), #171b1ed9;
+  --glass: linear-gradient(155deg, #ffffff08, transparent 48%), #090b0de6;
   --rim: inset 0 1px 0 #ffffff35, inset 0 -1px 0 #ffffff0c;
   --frost: blur(18px) saturate(135%);
   --pearl: linear-gradient(165deg, #f9f7ee, #cbc9be);
@@ -48,12 +48,12 @@ dialog,
 .sizes [aria-pressed="true"],
 .solid,
 .action-arrow {
-  background: var(--pearl);
-  color: #1c2021;
-  box-shadow: inset 0 1px 0 #fff;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: inset 0 1px 0 #ffffff26;
 }
 .dock nav [aria-current="location"] {
-  color: #1c2021;
+  color: #fff;
 }
 .dock nav a::before {
   background: #ffffff22;
@@ -66,18 +66,19 @@ dialog,
   border-radius: 32px;
 }
 .hero-action {
-  background-color: #34393ac9;
-  border-color: #ffffff5c;
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: #fff;
 }
 .hero-action:hover,
 .hero-action:active {
-  background: linear-gradient(155deg, #515657e8, #303436e8);
+  background: var(--accent-hover);
   box-shadow: var(--rim);
 }
 .hero-action:hover .action-arrow,
 .hero-action:focus-visible .action-arrow {
-  background: #fff;
-  color: #111;
+  background: var(--accent-hover);
+  color: #fff;
 }
 .slide-controls {
   padding: 4px 6px 4px 16px;
@@ -93,7 +94,7 @@ dialog,
   padding: 6px 12px;
 }
 .catalog {
-  background: linear-gradient(165deg, #202629 0%, #14181b 28%, #0e1012 78%);
+  background: linear-gradient(165deg, #101315 0%, #090b0d 28%, #050607 78%);
   border-top: 1px solid var(--line);
 }
 .catalog h2 span,
@@ -117,19 +118,20 @@ footer span,
 }
 .catalog-filters button:not([aria-pressed="true"]):hover,
 .sizes button:not([aria-pressed="true"]):hover {
-  background: #ffffff15;
+  background: var(--accent-hover);
+  border-color: var(--accent-border);
 }
 .card {
   position: relative;
   border-radius: 20px;
   border: 1px solid var(--line);
-  background: #24292b;
+  background: #101315;
   box-shadow: 0 6px 18px #0003;
 }
 .card-pic {
   border-radius: inherit;
   aspect-ratio: 4 / 5;
-  background: #24292b;
+  background: #101315;
 }
 .card-caption {
   position: relative;
@@ -146,6 +148,9 @@ footer span,
 }
 .code {
   border-radius: 24px;
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: #fff;
 }
 .card-open {
   top: 12px;
@@ -153,8 +158,8 @@ footer span,
 }
 .card:hover .card-open,
 .solid:hover {
-  background: #f5f4ed;
-  color: #171b1d;
+  background: var(--accent-hover);
+  color: #fff;
 }
 footer {
   background: var(--glass);
@@ -167,7 +172,7 @@ footer a:last-child {
   padding: 10px;
 }
 dialog {
-  background-color: #15191cf0;
+  background-color: #090b0df5;
   box-shadow:
     var(--rim),
     0 20px 70px #0008;
@@ -199,6 +204,14 @@ dialog::backdrop {
   border: 1px solid var(--line);
   box-shadow: var(--rim);
 }
+.sizes button[aria-pressed="true"],
+.catalog-filters button[aria-pressed="true"],
+.solid,
+.bag-button b {
+  background: var(--accent);
+  border: 1px solid var(--accent-border);
+  color: #fff;
+}
 .stepper button,
 .line-end button {
   border-radius: 50%;
@@ -217,7 +230,7 @@ dialog::backdrop {
   border-radius: 22px 0 0 22px;
 }
 .drawer input {
-  background: #101416c9;
+  background: #050709d9;
   color: var(--ink);
   border: 1px solid #747e83;
   border-radius: 10px;
@@ -226,7 +239,7 @@ dialog::backdrop {
   color: #ffbda8;
 }
 :is(button, a, input, summary):focus-visible {
-  outline: 2px solid #e5d2ac;
+  outline: 2px solid var(--accent-focus);
   outline-offset: 2px;
 }
 @media (max-width: 760px) {
@@ -255,7 +268,7 @@ dialog::backdrop {
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
 ) {
   :root {
-    --glass: linear-gradient(145deg, #32383c, #171b1e);
+    --glass: linear-gradient(145deg, #161a1d, #080a0c);
   }
 }
 .hardware-poster {
@@ -292,7 +305,9 @@ dialog::backdrop {
     0 0 2px #000;
 }
 .dock .active-tab i {
-  background: linear-gradient(160deg, #fff, #e7e8e7);
+  background: linear-gradient(160deg, var(--accent-hover), var(--accent));
+  border: 1px solid var(--accent-border);
+  box-shadow: inset 0 1px 0 #ffffff30;
 }
 .hero-frame {
   width: 100%;
@@ -354,7 +369,7 @@ dialog::backdrop {
   font-size: 16px;
 }
 .shipping {
-  background: #171b1d;
+  background: #090b0c;
   min-height: calc(100svh - 160px);
 }
 .shipping .editorial-inner {
@@ -388,5 +403,120 @@ dialog::backdrop {
   }
 }
 
-.card-pic, .main-photo { background: #fafafa; }
-.card-pic img, .main-photo, .thumbs img { object-fit: contain; }
+.card-pic,
+.main-photo {
+  background: #000;
+}
+.card-pic img,
+.main-photo,
+.thumbs img {
+  object-fit: contain;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+.drawer input:focus {
+  border-color: var(--accent-hover);
+  outline: 2px solid var(--accent-focus);
+  box-shadow: 0 0 0 4px #4b070233;
+}
+.card-open {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: #fff;
+}
+.scroll-meter div {
+  background: var(--accent-hover);
+}
+.thumbs button[aria-pressed="true"] {
+  outline: 2px solid var(--accent-focus);
+}
+.solid {
+  border-color: var(--accent-border);
+}
+.solid:not(:disabled):hover,
+.hero-action:hover {
+  border-color: #b42318;
+}
+
+.scene-0 .hero-image {
+  object-position: 70% center;
+}
+.scene-0 .hero-shade {
+  background:
+    linear-gradient(90deg, #080a0cbb 0%, #080a0c80 32%, #080a0c14 65%),
+    linear-gradient(0deg, #080a0c70, transparent 40%);
+}
+.scene-0 .hardware-study {
+  top: auto;
+  bottom: 56px;
+  right: var(--gutter);
+  transform: none;
+  width: 132px;
+}
+.scene-0 .hardware-study figcaption {
+  font-size: 10px;
+  padding: 4px 8px;
+}
+@media (max-width: 760px) {
+  .scene-0 .hero-image {
+    object-position: 78% center;
+  }
+  .scene-0 .hero-shade {
+    background: linear-gradient(0deg, #080a0ce8, #080a0c66 42%, #080a0c08 72%);
+  }
+  .scene-0 .hardware-study {
+    top: 104px;
+    bottom: auto;
+    width: 88px;
+  }
+}
+
+.catalog {
+  position: relative;
+}
+.blood-trim {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 56px;
+  pointer-events: none;
+  overflow: hidden;
+}
+.blood-trim > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.blood-trim[data-rendered] > img {
+  visibility: hidden;
+}
+.catalog-head {
+  position: relative;
+}
+@media (max-width: 760px) {
+  .blood-trim {
+    height: 44px;
+  }
+  .catalog {
+    padding-top: 44px;
+  }
+}
+.catalog > .blood-trim {
+  padding: 0;
+}
+.catalog {
+  padding-top: 56px;
+}
+@media (max-width: 760px) {
+  .catalog {
+    padding-top: 48px;
+  }
+}
+
+.card {border:1px solid #7d0d06;}
+.card-caption {border-color:#7d0d06;background:#070809;}
+.gallery, .thumbs button, .cart-line img {background:#000;}
