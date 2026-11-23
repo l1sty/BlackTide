@@ -1,11 +1,7 @@
-import {
-  products,
-  productStatuses,
-  money,
-  validLine,
-  type Line,
-} from "@/data/products";
+import { productStatuses, money, validLine, type Line } from "@/data/products";
+import { readStore } from "@/lib/store-db";
 export async function POST(req: Request) {
+  const { products } = await readStore();
   const error = (message: string, status: number) =>
     Response.json({ error: message }, { status });
   let data;
